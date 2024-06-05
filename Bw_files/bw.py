@@ -6,16 +6,18 @@ from kivy.uix.textinput import TextInput
 import kivy.clock as CLOCK
 from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.image import Image
 from rpy2.robjects import RObject
 
-class waterBalance(GridLayout):
-    def __init__(self):
-        
+class waterBalance(Button):
+    pass        
 
 
 class bwapp(App):
     def build(self):
-        return waterBalance
+        self.window = GridLayout()
+        self.window.cols = 1
+        self.window.add_widget(Image(source = "background.png"))
             
        
 if __name__ == '__main__':
