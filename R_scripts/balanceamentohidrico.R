@@ -154,7 +154,7 @@ watball_daily <- function(t, p, lat, CC){
   if(length(w) > 0) balhid[w, 12] <- 0
   
   colnames(balhid) <-  c
-  
-  tabela <- read.csv('/home/ramoraes/R_scripts/dados2.csv')
-  
-  watball_daily(t )
+}  
+tabela <- read.csv('/home/ramoraes/R_scripts/dados2.csv')
+
+watball_daily(t )

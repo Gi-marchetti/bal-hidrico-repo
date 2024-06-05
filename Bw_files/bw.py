@@ -9,7 +9,8 @@ from kivy.uix.floatlayout import FloatLayout
 from rpy2.robjects import RObject
 
 class waterBalance(GridLayout):
-    pass
+    def __init__(self):
+        
 
 
 class bwapp(App):
