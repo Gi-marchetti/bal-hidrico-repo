@@ -1,9 +1,26 @@
 
+#' Function to plot water balance
+#'
+#' @description Function to plot water balance.
+#' @param bh Water balance in data.frame format from watbal() function.
+#' @return Plot of water balance
+#' @importFrom ggplot2 ggplot aes geom_bar scale_fill_manual theme_minimal theme guides xlab ylab scale_x_discrete ggtitle  element_text element_blank guide_legend  rel unit
+#' @import reshape2
+#' @importFrom grDevices rgb
+#' @examples
+#' wb <- watbal(t = c(10, 11.5, 14, 16.5, 20, 24.5, 27.5, 28, 24.5, 19.5, 14.5, 11),
+#' p = c(55, 73, 84, 58, 33, 23, 2, 2, 28, 66, 94, 71), lat = 35, CC = 400)
+#' plotWatbal(wb)
+#' @export
+#'
+
 library(bioclim)
 library(ggplot2)
 
 # Função para calcular o balanço hídrico
 watball_daily <- function(t, p, lat, CC){
+  t <- na.omit(t)
+  p <- na.omit(p)
   n <- length(t)
   balhid <- matrix(NA, ncol = 12, nrow = n)
   colnames(balhid) <-  c('Tmp', 'Pcp', 'PET', 'P_PET', 'ppa', 'ST', 'i_ST', 'ETR', 'Dh', 'S', 'r', 'rP')
@@ -155,6 +172,89 @@ watball_daily <- function(t, p, lat, CC){
   
   colnames(balhid) <-  c
 }  
-tabela <- read.csv('/home/ramoraes/R_scripts/dados2.csv')
 
-watball_daily(t )
+plotWatbal <- function(bh){
+  #
+  n <- nrow(bh)
+  days <- seq.Date(from = as.Date("2024-01-05"), by = "day", length.out = n)
+  dbh <- data.frame(
+    days = days,
+    white = NA,
+    water_exc = NA,
+    soil_moist = NA,
+    wat_def = NA,
+    soil_rech = NA
+  )
+
+  for(i in 1:n){
+    dbh$white[i] <- min(bh$PET[i], bh$P[i])
+    if(bh$RET[i] == bh$PET[i]) {
+      if(round(bh$ME[i], 2) > 0) {
+        dbh$water_exc[i] <- bh$P[i] - dbh$white[i]
+      } else {
+        dbh$water_exc[i] <- 0
+      }
+    } else {
+      dbh$water_exc[i] <- 0
+    }
+
+    if(bh$PET[i] > bh$P[i]) {
+      dbh$soil_moist[i] <- bh$RET[i] - sum(dbh$white[i], dbh$water_exc[i], na.rm = TRUE)
+    } else {
+      dbh$soil_moist[i] <- 0
+    }
+
+    if(bh$PET[i] > bh$RET[i]) {
+      dbh$wat_def[i] <- bh$PET[i] - sum(dbh$white[i], dbh$soil_moist[i], dbh$water_exc[i], na.rm = TRUE)
+    } else {
+      dbh$wat_def[i] <- 0
+    }
+
+    if(bh$PET[i] > bh$P[i]) {
+      dbh$soil_rech[i] <- 0
+    } else {
+      if(bh$RET[i] == bh$PET[i]) {
+        if(round(bh$ME[i], 2) == 0) {
+          dbh$soil_rech[i] <- bh$P[i] - sum(dbh$white[i], dbh$soil_moist[i], dbh$wat_def[i], dbh$water_exc[i], na.rm = TRUE)
+        } else {
+          dbh$soil_rech[i] <- 0
+        }
+      } else {
+        dbh$soil_rech[i] <- 0
+      }
+    }
+  }
+
+  dbh <- dbh[, c('days', 'wat_def', 'soil_moist', 'soil_rech', 'water_exc', 'white')]
+  names(dbh) <- c('days', 'Water deficit', 'Soil water use', 'Soil water recharge', 'Water exceedance', ' ')
+
+  dbh_melted <- melt(dbh, id.vars = "days")
+
+  ggplot(dbh_melted[order(dbh_melted$variable),], aes(x = days, y = value, fill = variable)) +
+    geom_bar(stat = "identity") +
+    scale_fill_manual("legend", values = c(" " = rgb(1, 1, 1, 0),
+                                           "Water exceedance" = "darkblue",
+                                           "Soil water use" = "orange",
+                                           'Water deficit' = 'red',
+                                           'Soil water recharge' = 'lightblue')) +
+    theme_minimal() +
+    theme(legend.position = "bottom",
+          legend.title = element_blank(),
+          axis.title.y = element_text(size = rel(0.8)),
+          plot.title = element_text(size = rel(0.9), face = 'bold'),
+          legend.spacing.x = unit(0.15, 'cm')) +
+    xlab('') + ylab('mm') +
+    scale_x_date(date_labels = "%b-%d", date_breaks = "1 month") +
+    ggtitle("Daily Water Balance")
+}
+
+
+data <- read.csv("../data_archives/temp_prec.csv", skip = 10, header = FALSE)
+colnames(data) <- c("Year", "DOY", "T2M", "PRECTOTCORR")
+temperatura_lista <- unlist(data$T2M)
+precipitacao_lista <- unlist(data$PRECTOTCORR)
+temperatura_lista <- as.numeric(temperatura_lista)
+precipitacao_lista <- as.numeric(precipitacao_lista)
+print(temperatura_lista)
+wb <- watball_daily(t = temperatura_lista, p = precipitacao_lista, lat = 22, CC = 400)
+plotWatbal(wb)
