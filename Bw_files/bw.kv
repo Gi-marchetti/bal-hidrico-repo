@@ -25,35 +25,38 @@ WindowManager:
             font_size: 30  
             center_x: root.width / 2
             text: "Previsão do Tempo"
-        Image:
+        ImageButton:
             id: imageprevtemp
             source:"background.png"
-            on_touch_down: 
+            on_press: 
                 root.manager.transition.direction = 'left'
-                if self.collide_point(*args[1].pos): app.root.current = "prevtemposcreen"; root.play_sound("Exanima OST -  Beastly Calls.mp3")     
+                app.root.current = "prevtemposcreen"
+                root.play_sound("Exanima OST -  Beastly Calls.mp3")  
                 
         Label:
             id: prevclim
             font_size: 30  
             center_x: root.width / 2
             text: "Previsão do Clima"
-        Image:
+        ImageButton:
             id: imageprevclim
             source:"background.png"
-            on_touch_down: 
+            on_press: 
                 app.root.current = "prevclimscreen"
-                if self.collide_point(*args[1].pos): root.manager.transition.direction = 'left'; root.play_sound("Exanima OST -  Beastly Calls.mp3")   
+                root.manager.transition.direction = 'left'
+                root.play_sound("Exanima OST -  Beastly Calls.mp3")   
         Label:
             id: balhid
             font_size: 30  
             center_x: root.width / 2
             text: "Balanço Hídrico"
-        Image:
+        ImageButton:
             id: imagebalhid
             source:"background.png"
-            on_touch_down: 
+            on_press: 
                 root.manager.transition.direction = 'left'
-                if self.collide_point(*args[1].pos): app.root.current = "balhidscreen"; root.play_sound("Exanima OST -  Beastly Calls.mp3") 
+                app.root.current = "balhidscreen"
+                root.play_sound("Exanima OST -  Beastly Calls.mp3") 
                                   
 <PrevTempo>:
     name: "prevtemposcreen"
@@ -61,40 +64,41 @@ WindowManager:
         spacing: "5dp"
         orientation: "vertical"
         size: root.width, root.height
-        BoxLayout:
-            orientation: "horizontal"
-            spacing: "5dp"
+        GridLayout:
+            rows: 2
+            spacing: "15dp"
             size_hint: None,None
-            size: root.width, root.height-550
-            Image:
+            size: root.width, root.height
+            ImageButton:
                 id: back
                 fit_mode: "contain"
-                source: "background.png" 
-                pos_y: root.y - 300
-                on_touch_down: 
+                source: "voltar.webp" 
+                size_hint: None,None
+                width: 50
+                height: 50
+                on_press: 
                     root.manager.transition.direction = 'right'
-                    if self.collide_point(*args[1].pos): app.root.current = "home"; app.root.stop_sound() 
-                     
-            Label:
-                id: titleprevtempo
-                font_size: 30  
-                center_x: 3*root.width / 4
-                top: root.top -5
-                text: "Previsão do Tempo"
-                color: 0,0,0,1,
-                bold: True
-        BoxLayout:
-            spacing: "5dp"
-            orientation: "vertical"
-            size: root.width, root.height
-            Image:
-                id: graphprevtemp
-                source:"background.png"
-            Label:
-                id: prevtemplist
-                font_size: 30  
-                center_x: root.width / 2
-                text: "listinha"   
+                    app.root.current = "home"
+                    app.root.stop_sound() 
+            BoxLayout:
+                spacing: "5dp"
+                orientation: "vertical"
+                size_hint: (.85,1)
+                size: root.width, root.height
+                Label:
+                    id: titleprevtempo
+                    font_size: 25  
+                    text: "Previsão do Tempo"
+                    color: 0,0,0,1,
+                    bold: True
+                Image:
+                    id: graphprevtemp
+                    source:"background.png"
+                Label:
+                    id: prevtemplist
+                    font_size: 30  
+                    center_x: root.width / 2
+                    text: root.texto
 
 <PrevClim>:
     name: "prevclimscreen"
@@ -103,35 +107,40 @@ WindowManager:
         orientation: "vertical"
         size: root.width, root.height
         GridLayout:
-            spacing: "5dp"
-            cols: 2
-            Image:
+            rows: 2
+            spacing: "15dp"
+            size_hint: None,None
+            size: root.width, root.height
+            ImageButton:
                 id: back
-                source: "background.png"
-                on_touch_down: 
+                fit_mode: "contain"
+                source: "voltar.webp" 
+                size_hint: None,None
+                width: 50
+                height: 50
+                on_press: 
                     root.manager.transition.direction = 'right'
-                    if self.collide_point(*args[1].pos): app.root.current = "home"; app.root.stop_sound() 
-                    
-            Label:
-                id: titleprevclim
-                font_size: 45  
-                center_x: root.width / 2
-                top: root.top -5
-                text: "Previsão do Clima"
-                color: 0,0,0,1,
-                bold: True    
-        BoxLayout:
-            spacing: "5dp"
-            orientation: "vertical"
-            size: root.width, root.height        
-            Image:
-                id: graphprevclim
-                source:"background.png"
-            Label:
-                id: prevclimlist
-                font_size: 30  
-                center_x: root.width / 2
-                text: "listinha"                    
+                    app.root.current = "home"
+                    app.root.stop_sound() 
+            BoxLayout:
+                spacing: "5dp"
+                orientation: "vertical"
+                size_hint: (.85,1)
+                size: root.width, root.height
+                Label:
+                    id: titleprevclim
+                    font_size: 25  
+                    text: "Previsão do Clima"
+                    color: 0,0,0,1,
+                    bold: True
+                Image:
+                    id: graphprevclim
+                    source:"background.png"
+                Label:
+                    id: prevclimlist
+                    font_size: 30  
+                    center_x: root.width / 2
+                    text: "listinha" 
 
 <BalHidro>:
     name: "balhidscreen"
@@ -140,32 +149,37 @@ WindowManager:
         orientation: "vertical"
         size: root.width, root.height
         GridLayout:
-            spacing: "5dp"
-            cols: 2
-            Image:
-                id: back
-                source: "background.png"
-                on_touch_down: 
-                    root.manager.transition.direction = 'right'
-                    if self.collide_point(*args[1].pos): app.root.current = "home"; app.root.stop_sound() 
-                    
-            Label:
-                id: titlebalhid
-                font_size: 45  
-                center_x: root.width / 2
-                top: root.top -5
-                text: "Balanço Hídrico"
-                color: 0,0,0,1,
-                bold: True
-        BoxLayout:
-            spacing: "5dp"
-            orientation: "vertical"
+            rows: 2
+            spacing: "15dp"
+            size_hint: None,None
             size: root.width, root.height
-            Image:
-                id: graphbalhid
-                source:"background.png"
-            Label:
-                id: balhidlist
-                font_size: 30  
-                center_x: root.width / 2
-                text: "listinha"                                
+            ImageButton:
+                id: back
+                fit_mode: "contain"
+                source: "voltar.webp" 
+                size_hint: None,None
+                width: 50
+                height: 50
+                on_press: 
+                    root.manager.transition.direction = 'right'
+                    app.root.current = "home"
+                    app.root.stop_sound() 
+            BoxLayout:
+                spacing: "5dp"
+                orientation: "vertical"
+                size_hint: (.85,1)
+                size: root.width, root.height
+                Label:
+                    id: titlebalhid
+                    font_size: 25  
+                    text: "Balanço Hídrico"
+                    color: 0,0,0,1,
+                    bold: True
+                Image:
+                    id: graphbalhid
+                    source:"background.png"
+                Label:
+                    id: balhidlist
+                    font_size: 30  
+                    center_x: root.width / 2
+                    text: "listinha" 
